@@ -28,7 +28,7 @@ public class Person {
     @Column(name = "name")
     private String name;
 
-    @Min(value = 0 , message = "Age should be more than 0")
+    @Min(value = 1 , message = "Age should be more than 1")
     @Column(name = "age")
     private Integer age;
 
