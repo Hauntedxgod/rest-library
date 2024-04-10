@@ -1,6 +1,7 @@
 package ru.maxima.restlibrary.controllers;
 
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,19 +30,21 @@ public class PersonRegistrationController {
     private final JWTUtils utils;
 
     private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public PersonRegistrationController(PersonService personService, PersonValidation validation, JWTUtils utils, AuthenticationManager authenticationManager) {
+    public PersonRegistrationController(PersonService personService, PersonValidation validation, JWTUtils utils, AuthenticationManager authenticationManager, ModelMapper modelMapper) {
         this.personService = personService;
         this.validation = validation;
         this.utils = utils;
         this.authenticationManager = authenticationManager;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/registration")
     public Map<String , String> personRegistration(@RequestBody @Valid PersonDto personDto ,
                                                    BindingResult bindingResult){
-        Person person = personService.convertToPerson(personDto);
+        Person person = modelMapper.map(personDto , Person.class);
 
         validation.validate(person , bindingResult);
 

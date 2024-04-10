@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +27,7 @@ public class Person {
 
     @NotEmpty(message = "Name should not to be empty")
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Min(value = 1 , message = "Age should be more than 1")
@@ -47,6 +49,7 @@ public class Person {
     private String role;
 
     @Column(name = "created_At")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "removed_At")

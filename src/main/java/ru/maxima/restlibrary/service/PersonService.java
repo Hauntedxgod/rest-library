@@ -52,29 +52,32 @@ public class PersonService {
         repository.save(person);
     }
 
-    public void deletePerson(Long id ){
-        // уточнить насчет этой строки
-        repository.deleteById(id);
+    public void deletePerson(Long id , String deleteOrName ){
+        Person byId = findById(id);
+        byId.setRemovedPerson(deleteOrName);
+        byId.setRemovedAt(LocalDateTime.now());
+        save(byId);
     }
 
     public Person findByName(String name){
-        return repository.findByName(name);
+        return repository.findByName(name).orElseThrow(PersonNotFoundException :: new);
     }
     public PersonDto convertToPersonDTO(Person person){
         return modelMapper.map(person , PersonDto.class);
     }
 
-    public Person convertToPerson(PersonDto personDTO) {
-        Person person = modelMapper.map(personDTO , Person.class);
-        changesPerson(person);
-        return person;
-    }
+//    public Person convertToPerson(PersonDto personDTO) {
+//        Person person = modelMapper.map(personDTO , Person.class);
+////        changesPerson(person);
+//        return person;
+//    }
 
-    private void changesPerson(Person person) {
-        person.setCreatedAt(LocalDateTime.now());
-        person.setRemovedAt(LocalDateTime.now());
-        person.setCreatedPerson(person.getName());
-        person.setRemovedPerson(person.getName());// уточнить насчет этой строки
+    public void changesPerson(Person person , String creatorName) {
+//        person.setCreatedAt(LocalDateTime.now());
+//        person.setRemovedAt(LocalDateTime.now());
+        person.setCreatedPerson(creatorName);
+        save(person);
+//        person.setRemovedPerson(person.getName());// уточнить насчет этой строки
     }
 
     public void checkErrors(BindingResult result) {
