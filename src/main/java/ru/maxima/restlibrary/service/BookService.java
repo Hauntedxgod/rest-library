@@ -1,13 +1,15 @@
 package ru.maxima.restlibrary.service;
 
 import org.springframework.stereotype.Service;
-import ru.maxima.restlibrary.exceptions.BookNotFoundException;
-import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import ru.maxima.restlibrary.exceptions.*;
 import ru.maxima.restlibrary.models.Book;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.repositories.BookRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,6 +19,11 @@ public class BookService {
 
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
+    }
+
+
+    public List<Book> getAllBook(){
+        return bookRepository.findAll();
     }
 
 
@@ -36,6 +43,7 @@ public class BookService {
         byId.setAuthor(byId.getAuthor());
         byId.setAnnotation(byId.getAnnotation());
         byId.setUpdatedPerson(update);
+        byId.setUpdatedAt(LocalDateTime.now());
         save(byId);
     }
 
@@ -51,6 +59,36 @@ public class BookService {
         save(byId);
     }
 
+    public void checkErrorsUpdate(BindingResult result) {
+        if (result.hasErrors()) {
+
+            StringBuilder builder = new StringBuilder();
+
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            fieldErrors.forEach(error -> {
+                builder.append(error.getField());
+                builder.append("-");
+                builder.append(error.getDefaultMessage());
+            });
+            throw new BookNotUpdateException(builder.toString());
+
+        }
+    }
+    public void checkErrorsCreated(BindingResult result) {
+        if (result.hasErrors()) {
+
+            StringBuilder builder = new StringBuilder();
+
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            fieldErrors.forEach(error -> {
+                builder.append(error.getField());
+                builder.append("-");
+                builder.append(error.getDefaultMessage());
+            });
+            throw new BookNotCreatedException(builder.toString());
+
+        }
+    }
 
 
 
