@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.maxima.restlibrary.dto.BookDto;
+import ru.maxima.restlibrary.dto.PersonDto;
+import ru.maxima.restlibrary.exceptions.BookNotFoundException;
 import ru.maxima.restlibrary.models.Book;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.service.BookService;
@@ -36,6 +38,11 @@ public class BookController {
     }
 
 
+    @GetMapping("/{id}")
+    public BookDto showBookById(@PathVariable Long id) throws BookNotFoundException{
+       return modelMapper.map(bookService.findById(id) , BookDto.class );
+    }
+
     @PostMapping("/update/{id}")
     public ResponseEntity<HttpStatus> update (@PathVariable("id") Long id,
                                                    @AuthenticationPrincipal UserDetails userDetails,
@@ -48,7 +55,7 @@ public class BookController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping("/created")
     public ResponseEntity<HttpStatus> created(@RequestBody BookDto bookDto ,
                                               @AuthenticationPrincipal UserDetails userDetails ,
                                               BindingResult bindingResult){

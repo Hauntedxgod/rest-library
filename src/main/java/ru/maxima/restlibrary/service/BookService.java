@@ -52,6 +52,8 @@ public class BookService {
         save(book);
     }
 
+
+
     public void deletePerson(Long id , String delete){
         Book byId = findById(id);
         byId.setRemovedPerson(delete);
