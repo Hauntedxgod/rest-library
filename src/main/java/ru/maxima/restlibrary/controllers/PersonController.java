@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.maxima.restlibrary.dto.BookIdDto;
 import ru.maxima.restlibrary.dto.PersonDto;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.service.PersonService;
@@ -53,6 +54,15 @@ public class PersonController {
                                                    @AuthenticationPrincipal UserDetails userDetails){
 
         service.deletePerson(id, userDetails.getUsername());
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+
+    @PostMapping("/check/{id}")
+    public ResponseEntity<HttpStatus> bookId(@PathVariable("id") Long id , BookIdDto bookIdDto, BindingResult bindingResult){
+        if (bookIdDto.getBookId() != null){
+            service.bookId(id , bookIdDto.getBookId());
+        }
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

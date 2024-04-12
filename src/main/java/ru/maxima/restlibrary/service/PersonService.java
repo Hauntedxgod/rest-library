@@ -9,6 +9,7 @@ import ru.maxima.restlibrary.dto.PersonDto;
 import ru.maxima.restlibrary.exceptions.PersonNotCreatedException;
 import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
 import ru.maxima.restlibrary.models.Person;
+import ru.maxima.restlibrary.repositories.BookRepository;
 import ru.maxima.restlibrary.repositories.PersonRepository;
 
 import java.time.LocalDateTime;
@@ -20,11 +21,14 @@ public class PersonService {
 
     private final PersonRepository repository;
 
+    private final BookRepository bookRepository;
+
     private final ModelMapper modelMapper;
 
     @Autowired
-    public PersonService(PersonRepository repository, ModelMapper modelMapper) {
+    public PersonService(PersonRepository repository, BookRepository bookRepository, ModelMapper modelMapper) {
         this.repository = repository;
+        this.bookRepository = bookRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -94,6 +98,14 @@ public class PersonService {
             throw new PersonNotCreatedException(builder.toString());
 
         }
+    }
+
+    public void bookId(Long id , Long bookId){
+        Person person = repository.findById(id).orElseThrow(PersonNotFoundException :: new);
+        if (person != null){
+            person.setBooks(bookRepository.findByOwner_Id(bookId));
+        }
+        repository.save(person);
     }
 
 

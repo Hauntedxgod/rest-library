@@ -73,7 +73,4 @@ public class BookController {
         bookService.deletePerson(id , userDetails.getUsername());
         return ResponseEntity.ok(HttpStatus.NOT_FOUND);
     }
-
-
-
 }
