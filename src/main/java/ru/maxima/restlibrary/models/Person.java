@@ -12,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -60,5 +61,8 @@ public class Person {
 
     @Column(name = "removed_Person")
     private String removedPerson;
+
+    @OneToMany
+    private List<Book> books;
 
 }

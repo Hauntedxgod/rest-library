@@ -56,4 +56,7 @@ public class Book {
     @Column(name = "removed_Person")
     private String removedPerson;
 
+    @ManyToOne
+    private Person owner;
+
 }
