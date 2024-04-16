@@ -38,7 +38,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((s) ->
-                        s.requestMatchers("/a/login", "/a/registration", "/error").permitAll()
+                        s.requestMatchers("/a/login", "/a/registration", "/error" , "/v3/api-docs/**","/v2/api-docs/**",
+                                        "/api-docs/**", "/api-docs",
+                                        "/configuration/ui",
+                                        "/swagger-resources/**",
+                                        "/configuration/security",
+                                        "/swagger-ui.html",
+                                        "/webjars/**",
+                                        "/swagger-ui*/**" ).permitAll()
                                 .anyRequest().authenticated())
                 .formLogin((s) -> s.loginPage("/a/login")
                         .loginProcessingUrl("/process_login")

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @NoArgsConstructor
-@Table(name = "book")
+@Table(name = "books")
 public class Book {
 
 
@@ -40,7 +40,6 @@ public class Book {
     private LocalDateTime createdAt;
 
     @Column(name = "update_at")
-    @CreationTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "removed_at")
@@ -57,6 +56,7 @@ public class Book {
     private String removedPerson;
 
     @ManyToOne
+    @JoinColumn(name = "owner" , referencedColumnName = "id")
     private Person owner;
 
 }

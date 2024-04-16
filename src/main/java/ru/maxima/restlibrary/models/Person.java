@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "person")
+@Table(name = "persons")
 @Entity
 public class Person {
 
@@ -50,7 +50,6 @@ public class Person {
     private String role;
 
     @Column(name = "created_At")
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "removed_At")
@@ -62,7 +61,7 @@ public class Person {
     @Column(name = "removed_Person")
     private String removedPerson;
 
-    @OneToMany
+    @OneToMany(mappedBy = "owner" , fetch = FetchType.EAGER)
     private List<Book> books;
 
 }

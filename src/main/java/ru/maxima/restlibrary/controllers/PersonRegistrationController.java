@@ -16,6 +16,7 @@ import ru.maxima.restlibrary.jwt.JWTUtils;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.security.PersonDetails;
 import ru.maxima.restlibrary.service.PersonService;
+import ru.maxima.restlibrary.service.PersonServiceEncoder;
 import ru.maxima.restlibrary.validation.PersonValidation;
 
 import java.util.Map;
@@ -25,6 +26,8 @@ import java.util.Map;
 public class PersonRegistrationController {
 
     private final PersonService personService;
+
+    private final PersonServiceEncoder personServiceEncoder;
     private final PersonValidation validation;
 
     private final JWTUtils utils;
@@ -33,13 +36,15 @@ public class PersonRegistrationController {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public PersonRegistrationController(PersonService personService, PersonValidation validation, JWTUtils utils, AuthenticationManager authenticationManager, ModelMapper modelMapper) {
+    public PersonRegistrationController(PersonService personService, PersonServiceEncoder personServiceEncoder, PersonValidation validation, JWTUtils utils, AuthenticationManager authenticationManager, ModelMapper modelMapper) {
         this.personService = personService;
+        this.personServiceEncoder = personServiceEncoder;
         this.validation = validation;
         this.utils = utils;
         this.authenticationManager = authenticationManager;
         this.modelMapper = modelMapper;
     }
+
 
     @PostMapping("/registration")
     public Map<String , String> personRegistration(@RequestBody @Valid PersonDto personDto ,
@@ -52,7 +57,7 @@ public class PersonRegistrationController {
             return Map.of("message" , "500");
         }
 
-        personService.save(person);
+        personServiceEncoder.savePassword(person);
 
 
 
@@ -73,16 +78,16 @@ public class PersonRegistrationController {
     @PostMapping("/login")
     public Map<String , Object> login(@RequestBody LoginDto loginDto){
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getName() , loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginDto.getUsername() , loginDto.getPassword());
 
         try {
             authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         } catch (AuthenticationException e) {
             return Map.of("message" , "500");
         }
-        Person personToken = personService.findByName(loginDto.getName());
+        Person personToken = personService.findByName(loginDto.getUsername());
 
-        String token = utils.generateToken(loginDto.getName());
+        String token = utils.generateToken(loginDto.getUsername());
 
         return Map.of("jwt - token", token, "name", personToken.getName(), "age", personToken.getAge(),
                 "email", personToken.getEmail(), "phoneNumber", personToken.getPhoneNumber(),

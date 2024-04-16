@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.security.PersonDetails;
 
@@ -20,10 +21,12 @@ public class PersonDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Person personName = personService.findByName(username);
-
-        if (personName == null) {
-            throw new UsernameNotFoundException("Not found user ");
+         Person personName = null;
+        try {
+            personName = personService.findByName(username);
+        }
+        catch (PersonNotFoundException e) {
+            throw new PersonNotFoundException();
         }
         return new PersonDetails(personName);
     }

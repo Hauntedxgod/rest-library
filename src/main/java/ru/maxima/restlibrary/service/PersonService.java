@@ -2,12 +2,15 @@ package ru.maxima.restlibrary.service;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import ru.maxima.restlibrary.dto.BookDto;
 import ru.maxima.restlibrary.dto.PersonDto;
 import ru.maxima.restlibrary.exceptions.PersonNotCreatedException;
 import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
+import ru.maxima.restlibrary.models.Book;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.repositories.BookRepository;
 import ru.maxima.restlibrary.repositories.PersonRepository;
@@ -23,12 +26,16 @@ public class PersonService {
 
     private final BookRepository bookRepository;
 
+    private final BookService service;
+
+
     private final ModelMapper modelMapper;
 
     @Autowired
-    public PersonService(PersonRepository repository, BookRepository bookRepository, ModelMapper modelMapper) {
+    public PersonService(PersonRepository repository, BookRepository bookRepository, BookService service, ModelMapper modelMapper) {
         this.repository = repository;
         this.bookRepository = bookRepository;
+        this.service = service;
         this.modelMapper = modelMapper;
     }
 
@@ -42,6 +49,7 @@ public class PersonService {
         Optional<Person> getId = repository.findById(id);
         return getId.orElseThrow(PersonNotFoundException :: new);
     }
+
 
     public void save(Person person){
         repository.save(person);
@@ -80,6 +88,7 @@ public class PersonService {
 //        person.setCreatedAt(LocalDateTime.now());
 //        person.setRemovedAt(LocalDateTime.now());
         person.setCreatedPerson(creatorName);
+        person.setCreatedAt(LocalDateTime.now());
         save(person);
 //        person.setRemovedPerson(person.getName());// уточнить насчет этой строки
     }
@@ -100,13 +109,22 @@ public class PersonService {
         }
     }
 
-    public void bookId(Long id , Long bookId){
-        Person person = repository.findById(id).orElseThrow(PersonNotFoundException :: new);
-        if (person != null){
-            person.setBooks(bookRepository.findByOwner_Id(bookId));
-        }
-        repository.save(person);
-    }
+//    public BookDto bookId(Long id , Long bookId ){
+//
+//        BookDto bookDto = modelMapper.map(bookRepository.findById(id).orElse(null) , BookDto.class);
+//        if (bookDto != null){
+//            bookDto.setOwner(modelMapper.map(bookRepository.findByOwner_Id(bookId) , PersonDto.class));
+//        }
+//        repository.save(modelMapper.map(bookDto, Person.class));
+//        return bookDto;
+//    }
 
+    public void takeBook(Long Id, BookDto bookDTO) {
+        Book book = service.getBookName(bookDTO.getName());
+        Person person = findById(Id);
+        List<Book> Books = person.getBooks();
+        Books.add(book);
+        person.setBooks(Books);
+    }
 
 }

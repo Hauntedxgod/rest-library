@@ -9,35 +9,44 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.maxima.restlibrary.dto.BookDto;
 import ru.maxima.restlibrary.dto.BookIdDto;
 import ru.maxima.restlibrary.dto.PersonDto;
+import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
+import ru.maxima.restlibrary.models.Book;
 import ru.maxima.restlibrary.models.Person;
+import ru.maxima.restlibrary.service.BookService;
 import ru.maxima.restlibrary.service.PersonService;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @RestController
-@RequestMapping()
+@RequestMapping("/person")
 public class PersonController {
 
     private final PersonService service;
 
-
+    private final BookService bookService;
     private final ModelMapper modelMapper;
 
 
     @Autowired
-    public PersonController(PersonService service, ModelMapper modelMapper) {
+    public PersonController(PersonService service, BookService bookService, ModelMapper modelMapper) {
         this.service = service;
+        this.bookService = bookService;
         this.modelMapper = modelMapper;
     }
 
 
-    @GetMapping("/{id}")
-    public PersonDto getPerson(@PathVariable Long id){
-        return service.convertToPersonDTO(service.findById(id));
+    @GetMapping("/persons/{id}")
+    public PersonDto getPerson(@PathVariable Long id ) throws PersonNotFoundException {
+        return modelMapper.map(service.findById(id) , PersonDto.class);
     }
 
 
-    @PostMapping()
+    @PostMapping("/created")
     public ResponseEntity<HttpStatus> createPerson(@RequestBody @Valid PersonDto personDto  ,
                                                    @AuthenticationPrincipal UserDetails userDetails,
                                                    BindingResult bindingResult){
@@ -58,14 +67,12 @@ public class PersonController {
     }
 
 
-    @PostMapping("/check/{id}")
-    public ResponseEntity<HttpStatus> bookId(@PathVariable("id") Long id , BookIdDto bookIdDto, BindingResult bindingResult){
-        if (bookIdDto.getBookId() != null){
-            service.bookId(id , bookIdDto.getBookId());
-        }
+    @PostMapping("/take/{id}")
+    public ResponseEntity<HttpStatus> takeBook(@PathVariable("id") Long id , BookDto bookDto){
+        service.takeBook(id , bookDto);
         return ResponseEntity.ok(HttpStatus.OK);
+//        Метод взятие книги
     }
-
 
 
 }

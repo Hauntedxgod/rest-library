@@ -1,0 +1,28 @@
+openapi: "3.0.1"
+
+info:
+  version: '1.0.0'
+  title: 'My API title'
+  description: 'Awesome description'
+
+paths:
+  /conveyor/offers:
+    post:
+      summary: Create 4 loan offers
+      operationId: prescore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              firstName:
+                type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                firstName:
+                  type: string
+        400:
+          description: Invalid input data

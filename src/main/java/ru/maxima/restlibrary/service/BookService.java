@@ -1,14 +1,19 @@
 package ru.maxima.restlibrary.service;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import ru.maxima.restlibrary.dto.BookDto;
 import ru.maxima.restlibrary.exceptions.*;
 import ru.maxima.restlibrary.models.Book;
-import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.repositories.BookRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +22,27 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    public BookService(BookRepository bookRepository) {
+    private final ModelMapper modelMapper;
+
+    public BookService(BookRepository bookRepository, ModelMapper modelMapper) {
         this.bookRepository = bookRepository;
+//        this.bookDTORepository = bookDTORepository;
+        this.modelMapper = modelMapper;
+    }
+
+    public List<Book> getOwnerId(Long ownerId){
+        return bookRepository.findByOwner_Id(ownerId);
     }
 
 
-    public List<Book> getAllBook(){
-        return bookRepository.findAll();
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<BookDto> getAllBook(){
+        List<BookDto> bookDtos = new ArrayList<>();
+        List<Book> allBook = bookRepository.findAll();
+        for (int i = 0; i < allBook.size() ; i++) {
+            bookDtos.add(modelMapper.map(allBook.get(i) , BookDto.class));
+        }
+        return bookDtos;
     }
 
 
@@ -32,16 +51,20 @@ public class BookService {
         return getId.orElseThrow(BookNotFoundException:: new);
     }
 
+    public Book getBookName(String name){
+        return bookRepository.findByName(name).orElseThrow(BookNotFoundException :: new);
+    }
+
     public void save(Book book){
         bookRepository.save(book);
     }
 
-    public void updatePerson(Long id , String update){
+    public void updatePerson(Long id , BookDto bookDto , String update){
         Book byId = findById(id);
-        byId.setName(byId.getName());
-        byId.setYearOfProduction(byId.getYearOfProduction());
-        byId.setAuthor(byId.getAuthor());
-        byId.setAnnotation(byId.getAnnotation());
+        byId.setName(bookDto.getName());
+        byId.setYearOfProduction(bookDto.getYearOfProduction());
+        byId.setAuthor(bookDto.getAuthor());
+        byId.setAnnotation(bookDto.getAnnotation());
         byId.setUpdatedPerson(update);
         byId.setUpdatedAt(LocalDateTime.now());
         save(byId);

@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class BookIdDto {
 
-    private final Long bookId;
+    private Long bookId;
 }

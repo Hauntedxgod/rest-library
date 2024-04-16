@@ -1,10 +1,10 @@
 package ru.maxima.restlibrary.controllers;
 
-import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
@@ -13,12 +13,14 @@ import ru.maxima.restlibrary.dto.BookDto;
 import ru.maxima.restlibrary.dto.PersonDto;
 import ru.maxima.restlibrary.exceptions.BookNotFoundException;
 import ru.maxima.restlibrary.models.Book;
-import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.service.BookService;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequestMapping("/book")
 public class BookController {
 
     private final BookService bookService;
@@ -32,8 +34,10 @@ public class BookController {
     }
 
 
-    @GetMapping("/book")
-    public List<Book> allBook(){
+
+    @PreAuthorize("hasRole('ADMIN')") // не работает (
+    @GetMapping("/books")
+    public List<BookDto> allBook(){
         return bookService.getAllBook();
     }
 
@@ -43,18 +47,26 @@ public class BookController {
        return modelMapper.map(bookService.findById(id) , BookDto.class );
     }
 
+    @GetMapping("/getBook/{id}")
+    public PersonDto getBookOwner(@PathVariable("id") Long id) {
+        Book book = bookService.findById(id);
+        return modelMapper.map(book.getOwner(), PersonDto.class);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/update/{id}")
-    public ResponseEntity<HttpStatus> update (@PathVariable("id") Long id,
+    public ResponseEntity<HttpStatus> update (@PathVariable("id") Long id , BookDto bookDto,
                                                    @AuthenticationPrincipal UserDetails userDetails,
                                                    BindingResult bindingResult){
 
         bookService.checkErrorsUpdate(bindingResult);
 
 
-        bookService.updatePerson(id , userDetails.getUsername());
+        bookService.updatePerson(id , bookDto , userDetails.getUsername());
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/created")
     public ResponseEntity<HttpStatus> created(@RequestBody BookDto bookDto ,
                                               @AuthenticationPrincipal UserDetails userDetails ,
@@ -66,6 +78,7 @@ public class BookController {
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete /{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") Long id,
                                              @AuthenticationPrincipal UserDetails userDetails){

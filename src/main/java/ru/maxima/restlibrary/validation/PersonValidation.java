@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.service.PersonDetailsService;
 
@@ -31,7 +32,7 @@ public class PersonValidation implements Validator {
 
         try {
             service.loadUserByUsername(p.getName());
-        } catch (UsernameNotFoundException e) {
+        } catch (PersonNotFoundException e) {
             return;
         }
         errors.rejectValue("name" , "100" , "User with this nickName existed");

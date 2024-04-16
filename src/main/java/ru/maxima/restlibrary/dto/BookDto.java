@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import ru.maxima.restlibrary.models.Book;
+import ru.maxima.restlibrary.models.Person;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,4 +23,7 @@ public class BookDto {
     private String author;
 
     private String annotation;
+
+
+
 }
