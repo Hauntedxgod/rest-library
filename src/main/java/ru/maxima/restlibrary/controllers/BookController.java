@@ -50,7 +50,7 @@ public class BookController {
     @GetMapping("/getBook/{id}")
     public PersonDto getBookOwner(@PathVariable("id") Long id) {
         Book book = bookService.findById(id);
-        return modelMapper.map(book.getOwner(), PersonDto.class);
+        return modelMapper.map(book.getOwner(), PersonDto.class); // не до конца рабоатет
     }
 
     @PreAuthorize("hasRole('ADMIN')")

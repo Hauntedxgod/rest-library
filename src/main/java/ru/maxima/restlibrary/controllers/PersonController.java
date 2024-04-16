@@ -71,7 +71,7 @@ public class PersonController {
     public ResponseEntity<HttpStatus> takeBook(@PathVariable("id") Long id , BookDto bookDto){
         service.takeBook(id , bookDto);
         return ResponseEntity.ok(HttpStatus.OK);
-//        Метод взятие книги
+//        Метод взятие книги не до конца работает
     }
 
 
