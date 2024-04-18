@@ -5,22 +5,18 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.maxima.restlibrary.dto.BookDto;
-import ru.maxima.restlibrary.dto.BookIdDto;
 import ru.maxima.restlibrary.dto.PersonDto;
 import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
-import ru.maxima.restlibrary.models.Book;
 import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.service.BookService;
 import ru.maxima.restlibrary.service.PersonService;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import ru.maxima.restlibrary.service.PersonServiceEncoder;
 
 @RestController
 @RequestMapping("/person")
@@ -28,24 +24,28 @@ public class PersonController {
 
     private final PersonService service;
 
-    private final BookService bookService;
+
     private final ModelMapper modelMapper;
+
+    private final PersonServiceEncoder encoder;
 
 
     @Autowired
-    public PersonController(PersonService service, BookService bookService, ModelMapper modelMapper) {
+    public PersonController(PersonService service, ModelMapper modelMapper, PersonServiceEncoder encoder) {
         this.service = service;
-        this.bookService = bookService;
         this.modelMapper = modelMapper;
+        this.encoder = encoder;
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/persons/{id}")
     public PersonDto getPerson(@PathVariable Long id ) throws PersonNotFoundException {
         return modelMapper.map(service.findById(id) , PersonDto.class);
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/created")
     public ResponseEntity<HttpStatus> createPerson(@RequestBody @Valid PersonDto personDto  ,
                                                    @AuthenticationPrincipal UserDetails userDetails,
@@ -54,11 +54,13 @@ public class PersonController {
         service.checkErrors(bindingResult);
 
         Person person = modelMapper.map(personDto , Person.class);
+        person.setPassword(encoder.savePassword(person.getPassword()));
         service.changesPerson(person , userDetails.getUsername());
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deletePerson(@PathVariable("id") Long id ,
                                                    @AuthenticationPrincipal UserDetails userDetails){
 
@@ -67,11 +69,11 @@ public class PersonController {
     }
 
 
-    @PostMapping("/take/{id}")
-    public ResponseEntity<HttpStatus> takeBook(@PathVariable("id") Long id , BookDto bookDto){
-        service.takeBook(id , bookDto);
+    @PostMapping("/take")
+    public ResponseEntity<HttpStatus> takeBook(  @AuthenticationPrincipal UserDetails userDetails , BookDto bookDto){
+        service.takeBook(userDetails.getUsername() , bookDto);
         return ResponseEntity.ok(HttpStatus.OK);
-//        Метод взятие книги не до конца работает
+//        Метод дает книгу персону по полям BookDto
     }
 
 

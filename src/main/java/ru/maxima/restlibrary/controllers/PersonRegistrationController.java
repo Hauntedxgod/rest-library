@@ -57,7 +57,7 @@ public class PersonRegistrationController {
             return Map.of("message" , "500");
         }
 
-        personServiceEncoder.savePassword(person);
+        personServiceEncoder.savePassword(person.getPassword());
 
 
 

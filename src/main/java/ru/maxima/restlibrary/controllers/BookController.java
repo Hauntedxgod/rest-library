@@ -35,7 +35,7 @@ public class BookController {
 
 
 
-    @PreAuthorize("hasRole('ADMIN')") // не работает (
+
     @GetMapping("/books")
     public List<BookDto> allBook(){
         return bookService.getAllBook();
@@ -50,7 +50,8 @@ public class BookController {
     @GetMapping("/getBook/{id}")
     public PersonDto getBookOwner(@PathVariable("id") Long id) {
         Book book = bookService.findById(id);
-        return modelMapper.map(book.getOwner(), PersonDto.class); // не до конца рабоатет
+        return modelMapper.map(book.getOwner(), PersonDto.class);
+        // Метод показывает какая книга по Id у Person
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -64,6 +65,7 @@ public class BookController {
 
         bookService.updatePerson(id , bookDto , userDetails.getUsername());
         return ResponseEntity.ok(HttpStatus.OK);
+        // метод производит дополнение книги
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -76,6 +78,7 @@ public class BookController {
         Book book = modelMapper.map(bookDto , Book.class);
         bookService.createdPerson(book , userDetails.getUsername());
         return ResponseEntity.ok(HttpStatus.CREATED);
+        // метод производит редактирование книги
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -85,5 +88,6 @@ public class BookController {
 
         bookService.deletePerson(id , userDetails.getUsername());
         return ResponseEntity.ok(HttpStatus.NOT_FOUND);
+        // метод производит удаление книги
     }
 }

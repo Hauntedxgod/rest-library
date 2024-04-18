@@ -26,8 +26,10 @@ public class PersonDto {
 
     private String email;
 
+    @Min(value = 11 , message = "phoneNumber not found")
     private String phoneNumber;
 
+    @Size(min = 8 , message = "Min 8 chars , max 15 chars")
     private String password;
 
     private String role;

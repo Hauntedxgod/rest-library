@@ -26,12 +26,7 @@ public class BookService {
 
     public BookService(BookRepository bookRepository, ModelMapper modelMapper) {
         this.bookRepository = bookRepository;
-//        this.bookDTORepository = bookDTORepository;
         this.modelMapper = modelMapper;
-    }
-
-    public List<Book> getOwnerId(Long ownerId){
-        return bookRepository.findByOwner_Id(ownerId);
     }
 
 

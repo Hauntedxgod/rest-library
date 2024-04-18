@@ -39,28 +39,12 @@ public class PersonService {
         this.modelMapper = modelMapper;
     }
 
-
-
-    public List<Person> getAllPerson(){
-        return repository.findAll();
-    }
-
     public Person findById(Long id){
         Optional<Person> getId = repository.findById(id);
         return getId.orElseThrow(PersonNotFoundException :: new);
     }
 
-
     public void save(Person person){
-        repository.save(person);
-    }
-
-    public void updatePerson(Long id){
-        Person person = findById(id);
-        person.setName(person.getName());
-        person.setAge(person.getAge());
-        person.setEmail(person.getEmail());
-        person.setPhoneNumber(person.getPhoneNumber());
         repository.save(person);
     }
 
@@ -74,23 +58,11 @@ public class PersonService {
     public Person findByName(String name){
         return repository.findByName(name).orElseThrow(PersonNotFoundException :: new);
     }
-    public PersonDto convertToPersonDTO(Person person){
-        return modelMapper.map(person , PersonDto.class);
-    }
-
-//    public Person convertToPerson(PersonDto personDTO) {
-//        Person person = modelMapper.map(personDTO , Person.class);
-////        changesPerson(person);
-//        return person;
-//    }
 
     public void changesPerson(Person person , String creatorName) {
-//        person.setCreatedAt(LocalDateTime.now());
-//        person.setRemovedAt(LocalDateTime.now());
         person.setCreatedPerson(creatorName);
         person.setCreatedAt(LocalDateTime.now());
         save(person);
-//        person.setRemovedPerson(person.getName());// уточнить насчет этой строки
     }
 
     public void checkErrors(BindingResult result) {
@@ -109,22 +81,14 @@ public class PersonService {
         }
     }
 
-//    public BookDto bookId(Long id , Long bookId ){
-//
-//        BookDto bookDto = modelMapper.map(bookRepository.findById(id).orElse(null) , BookDto.class);
-//        if (bookDto != null){
-//            bookDto.setOwner(modelMapper.map(bookRepository.findByOwner_Id(bookId) , PersonDto.class));
-//        }
-//        repository.save(modelMapper.map(bookDto, Person.class));
-//        return bookDto;
-//    }
-
-    public void takeBook(Long Id, BookDto bookDTO) {
+    public void takeBook(String name, BookDto bookDTO) {
         Book book = service.getBookName(bookDTO.getName());
-        Person person = findById(Id);
-        List<Book> Books = person.getBooks();
-        Books.add(book);
-        person.setBooks(Books);
+        Person person = findByName(name);
+        List<Book> books = person.getBooks();
+        books.add(book);
+        book.setOwner(person);
+        person.setBooks(books);
+        bookRepository.save(book);
     }
 
 }

@@ -9,19 +9,16 @@ import ru.maxima.restlibrary.repositories.PersonRepository;
 @Service
 public class PersonServiceEncoder {
 
-    private final PersonRepository personRepository;
+
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public PersonServiceEncoder(PersonRepository personRepository, PasswordEncoder passwordEncoder) {
-        this.personRepository = personRepository;
+    public PersonServiceEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void savePassword(Person person){
-        String password = passwordEncoder.encode(person.getPassword());
-        person.setPassword(password);
-        personRepository.save(person);
+    public String savePassword(String input){
+        return passwordEncoder.encode(input);
     }
 }

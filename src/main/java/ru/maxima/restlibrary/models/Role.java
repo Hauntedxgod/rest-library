@@ -1,3 +1,4 @@
+/*
 package ru.maxima.restlibrary.models;
 
 public enum Role {
@@ -14,3 +15,4 @@ public enum Role {
         return name;
     }
 }
+*/
