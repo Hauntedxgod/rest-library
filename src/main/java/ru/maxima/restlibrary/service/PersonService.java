@@ -54,7 +54,7 @@ public class PersonService {
         Person person = repository.findByName(userDetails.getUsername());
         List<BookDto> bookDtos = new ArrayList<>();
         List<Book> books = person.getBooks();
-        books.forEach(a-> bookDtos.add(modelMapper.map(a , BookDto.class)));
+        books.forEach(a -> bookDtos.add(modelMapper.map(a , BookDto.class)));
         return bookDtos;
     }
 

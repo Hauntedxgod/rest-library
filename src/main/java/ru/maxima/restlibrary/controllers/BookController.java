@@ -41,7 +41,6 @@ public class BookController {
         return bookService.getAllBook();
     }
 
-
     @GetMapping("/{id}")
     public BookDto showBookById(@PathVariable Long id) throws BookNotFoundException{
        return modelMapper.map(bookService.findById(id) , BookDto.class );
@@ -79,7 +78,7 @@ public class BookController {
                                              @AuthenticationPrincipal UserDetails userDetails){
 
         bookService.deletePerson(id , userDetails.getUsername());
-        return ResponseEntity.ok(HttpStatus.NOT_FOUND);
+        return ResponseEntity.ok(HttpStatus.ACCEPTED);
         // метод производит удаление книги
     }
 }

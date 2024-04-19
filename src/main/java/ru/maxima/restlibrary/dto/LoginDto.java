@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class LoginDto {
 
     @NotEmpty(message = "Name should not to be empty")
