@@ -50,6 +50,23 @@ public class PersonService {
         repository.save(person);
     }
 
+    public List<BookDto> getBooks(UserDetails userDetails){
+        Person person = repository.findByName(userDetails.getUsername());
+        List<BookDto> bookDtos = new ArrayList<>();
+        List<Book> books = person.getBooks();
+        books.forEach(a-> bookDtos.add(modelMapper.map(a , BookDto.class)));
+        return bookDtos;
+    }
+
+    public void takeBook(String name, BookDto bookDTO) {
+        Book book = service.getBookName(bookDTO.getName());
+        Person person = findByName(name);
+        List<Book> books = person.getBooks();
+        books.add(book);
+        book.setOwner(person);
+        person.setBooks(books);
+        bookRepository.save(book);
+    }
     public void deletePerson(Long id , String deleteOrName  ){
         Person byId = findById(id);
         byId.setRemovedPerson(deleteOrName);
@@ -82,24 +99,4 @@ public class PersonService {
 
         }
     }
-
-
-    public List<BookDto> getBooks(UserDetails userDetails){
-        Person person = repository.findByName(userDetails.getUsername());
-        List<BookDto> bookDtos = new ArrayList<>();
-        List<Book> books = person.getBooks();
-        books.forEach(a-> bookDtos.add(modelMapper.map(a , BookDto.class)));
-        return bookDtos;
-    }
-
-    public void takeBook(String name, BookDto bookDTO) {
-        Book book = service.getBookName(bookDTO.getName());
-        Person person = findByName(name);
-        List<Book> books = person.getBooks();
-        books.add(book);
-        book.setOwner(person);
-        person.setBooks(books);
-        bookRepository.save(book);
-    }
-
 }
