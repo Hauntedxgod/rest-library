@@ -3,17 +3,17 @@ package ru.maxima.restlibrary.service;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import ru.maxima.restlibrary.dto.BookDto;
 import ru.maxima.restlibrary.exceptions.*;
 import ru.maxima.restlibrary.models.Book;
+import ru.maxima.restlibrary.models.Person;
 import ru.maxima.restlibrary.repositories.BookRepository;
+import ru.maxima.restlibrary.repositories.PersonRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,15 +22,17 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
+    private final PersonRepository personRepository;
+
     private final ModelMapper modelMapper;
 
-    public BookService(BookRepository bookRepository, ModelMapper modelMapper) {
+    public BookService(BookRepository bookRepository, PersonRepository personRepository, ModelMapper modelMapper) {
         this.bookRepository = bookRepository;
+        this.personRepository = personRepository;
         this.modelMapper = modelMapper;
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
     public List<BookDto> getAllBook(){
         List<BookDto> bookDtos = new ArrayList<>();
         List<Book> allBook = bookRepository.findAll();
@@ -52,6 +54,12 @@ public class BookService {
 
     public void save(Book book){
         bookRepository.save(book);
+    }
+
+    public void takeBoot(Long id , String name){
+        Book book = bookRepository.findById(id).orElseThrow(PersonNotFoundException:: new );
+        Person person = personRepository.findByName(name);
+        book.setOwner(person);
     }
 
     public void updatePerson(Long id , BookDto bookDto , String update){

@@ -57,8 +57,7 @@ public class PersonRegistrationController {
             return Map.of("message" , "500");
         }
 
-        personServiceEncoder.savePassword(person.getPassword());
-
+        personServiceEncoder.savePerson(person);
 
 
         String token = utils.generateToken(person.getName());

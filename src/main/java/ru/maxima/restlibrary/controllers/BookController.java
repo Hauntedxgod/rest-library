@@ -46,14 +46,6 @@ public class BookController {
     public BookDto showBookById(@PathVariable Long id) throws BookNotFoundException{
        return modelMapper.map(bookService.findById(id) , BookDto.class );
     }
-
-    @GetMapping("/getBook/{id}")
-    public PersonDto getBookOwner(@PathVariable("id") Long id) {
-        Book book = bookService.findById(id);
-        return modelMapper.map(book.getOwner(), PersonDto.class);
-        // Метод показывает какая книга по Id у Person
-    }
-
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/update/{id}")
     public ResponseEntity<HttpStatus> update (@PathVariable("id") Long id , BookDto bookDto,
@@ -82,7 +74,7 @@ public class BookController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/delete /{id}")
+    @PostMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") Long id,
                                              @AuthenticationPrincipal UserDetails userDetails){
 

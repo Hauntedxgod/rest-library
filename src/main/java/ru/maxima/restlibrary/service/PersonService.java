@@ -3,6 +3,7 @@ package ru.maxima.restlibrary.service;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -16,6 +17,7 @@ import ru.maxima.restlibrary.repositories.BookRepository;
 import ru.maxima.restlibrary.repositories.PersonRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +50,7 @@ public class PersonService {
         repository.save(person);
     }
 
-    public void deletePerson(Long id , String deleteOrName ){
+    public void deletePerson(Long id , String deleteOrName  ){
         Person byId = findById(id);
         byId.setRemovedPerson(deleteOrName);
         byId.setRemovedAt(LocalDateTime.now());
@@ -56,7 +58,7 @@ public class PersonService {
     }
 
     public Person findByName(String name){
-        return repository.findByName(name).orElseThrow(PersonNotFoundException :: new);
+        return repository.findByName(name);
     }
 
     public void changesPerson(Person person , String creatorName) {
@@ -79,6 +81,15 @@ public class PersonService {
             throw new PersonNotCreatedException(builder.toString());
 
         }
+    }
+
+
+    public List<BookDto> getBooks(UserDetails userDetails){
+        Person person = repository.findByName(userDetails.getUsername());
+        List<BookDto> bookDtos = new ArrayList<>();
+        List<Book> books = person.getBooks();
+        books.forEach(a-> bookDtos.add(modelMapper.map(a , BookDto.class)));
+        return bookDtos;
     }
 
     public void takeBook(String name, BookDto bookDTO) {

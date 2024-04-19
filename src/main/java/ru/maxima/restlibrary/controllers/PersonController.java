@@ -14,9 +14,12 @@ import ru.maxima.restlibrary.dto.BookDto;
 import ru.maxima.restlibrary.dto.PersonDto;
 import ru.maxima.restlibrary.exceptions.PersonNotFoundException;
 import ru.maxima.restlibrary.models.Person;
+import ru.maxima.restlibrary.security.PersonDetails;
 import ru.maxima.restlibrary.service.BookService;
 import ru.maxima.restlibrary.service.PersonService;
 import ru.maxima.restlibrary.service.PersonServiceEncoder;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/person")
@@ -35,6 +38,18 @@ public class PersonController {
         this.service = service;
         this.modelMapper = modelMapper;
         this.encoder = encoder;
+    }
+
+
+    @PostMapping("/take")
+    public ResponseEntity<HttpStatus> takeBook(@AuthenticationPrincipal UserDetails userDetails , BookDto bookDto) {
+        service.takeBook(userDetails.getUsername(), bookDto);
+        return ResponseEntity.ok(HttpStatus.OK);
+//        Метод дает книгу персону по полям BookDto
+    }
+    @GetMapping("/myBook")
+    public List<BookDto> myBook(@AuthenticationPrincipal UserDetails userDetails){
+        return service.getBooks(userDetails);
     }
 
 
@@ -67,14 +82,5 @@ public class PersonController {
         service.deletePerson(id, userDetails.getUsername());
         return ResponseEntity.ok(HttpStatus.OK);
     }
-
-
-    @PostMapping("/take")
-    public ResponseEntity<HttpStatus> takeBook(  @AuthenticationPrincipal UserDetails userDetails , BookDto bookDto){
-        service.takeBook(userDetails.getUsername() , bookDto);
-        return ResponseEntity.ok(HttpStatus.OK);
-//        Метод дает книгу персону по полям BookDto
-    }
-
 
 }
